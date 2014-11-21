@@ -710,6 +710,15 @@ for app_name in OPTIONAL_APPS:
             continue
     INSTALLED_APPS += (app_name,)
 
+
+############## Milestones ##############
+# Turn off milestones app by default
+FEATURES['MILESTONES_APP'] = False
+# Turn of pre-requisite course by default
+FEATURES['ENABLE_PREREQUISITE_COURSES'] = False
+if FEATURES['MILESTONES_APP']:
+    INSTALLED_APPS += ('milestones',)
+
 ### ADVANCED_SECURITY_CONFIG
 # Empty by default
 ADVANCED_SECURITY_CONFIG = {}
