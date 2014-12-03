@@ -16,13 +16,22 @@
   <script type="text/javascript">
   (function() {
     $(".register").click(function(event) {
-      if ( !$("#email-opt-in").prop("checked") ) {
-        $("input[name='email_opt_in']").val("false");
-      }
+      var el = $("input[name='email_opt_in']");
+      // Check if the email opt-in checkbox is missing
+      if ( $("#email-opt-in").length == 0 ) {
+        // Remove the corresponding hidden form element
+        el.remove();
+      } else {
+        // Check if the email opt-in checkbox is not checked
+        if ( !$("#email-opt-in").prop("checked") ) {
+          // Set the value of the corresponding hidden form element
+          el.val("false");
+        }
 
-      var email_opt_in = $("input[name='email_opt_in']").val(),
-        current_href = $("a.register").attr("href");
-      $("a.register").attr("href", current_href + "&email_opt_in=" + email_opt_in)
+        var emailOptIn = el.val(),
+          currentHref = $("a.register").attr("href");
+        $("a.register").attr("href", currentHref + "&email_opt_in=" + emailOptIn)
+      }
 
       $("#class_enroll_form").submit();
       event.preventDefault();
@@ -37,9 +46,13 @@
           window.top.location.href = "${reverse('dashboard')}";
         }
       } else if (xhr.status == 403) {
-        var email_opt_in = $("input[name='email_opt_in']").val();
+        var emailOptIn = '';
+        // Check if the email opt-in checkbox is present
+        if ( $("#email-opt-in").length != 0 ) {
+          emailOptIn = '&email_opt_in=' + $("input[name='email_opt_in']").val();
+        }
         ## Ugh.
-        window.top.location.href = $("a.register").attr("href") || "${reverse('register_user')}?course_id=${course.id | u}&enrollment_action=enroll&email_opt_in=" + email_opt_in;
+        window.top.location.href = $("a.register").attr("href") || "${reverse('register_user')}?course_id=${course.id | u}&enrollment_action=enroll" + emailOptIn;
       } else {
         $('#register_error').html(
             (xhr.responseText ? xhr.responseText : "${_("An error occurred. Please try again later.")}")
