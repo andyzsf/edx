@@ -27,7 +27,7 @@ import string  # pylint: disable=deprecated-module
 import random
 import unicodecsv
 import urllib
-from util.file import store_uploaded_file, course_and_time_based_filename_generator
+from util.file import store_uploaded_file, course_and_time_based_filename_generator, BlobIterator
 from util.json_request import JsonResponse
 from instructor.views.instructor_task_helpers import extract_email_features, extract_task_features
 
@@ -993,13 +993,12 @@ def add_users_to_cohorts(request, course_id):
             Verifies that the expected columns are present.
             """
             with file_storage.open(file_to_validate) as f:
-                # NOTE: There's a bug with the s3 implementation of django file
-                # storage in which passing mode='rU' does not actually open the
-                # file in universal newline mode.  Since the CSV library does not
-                # understand CR/CRLF, we are forced to read the whole file into
-                # memory via file.read().splitlines().
-                file_data = f.read().splitlines()
-                reader = unicodecsv.reader(file_data, encoding='utf-8')
+                # NOTE: There's a bug with the s3 implementation of django 1.4
+                # file storage in which passing mode='rU' does not actually
+                # open the file in universal newline mode.  To accommodate this bug,
+                # we use the BlobIterator to iterate over lines in the file in
+                # fixed-size chunks.
+                reader = unicodecsv.reader(BlobIterator(f), encoding='utf-8')
                 try:
                     fieldnames = next(reader)
                 except StopIteration:

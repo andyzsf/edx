@@ -18,8 +18,9 @@ from django.db import transaction, reset_queries
 import dogstats_wrapper as dog_stats_api
 from pytz import UTC
 
-from xmodule.modulestore.django import modulestore
 from track.views import task_track
+from util.file import BlobIterator
+from xmodule.modulestore.django import modulestore
 
 from course_groups.cohorts import add_users_to_cohorts
 from courseware.grades import iterate_grades_for
@@ -637,26 +638,29 @@ def cohort_students_and_upload(_xmodule_instance_args, _entry_id, course_id, tas
     start_time = time()
     start_date = datetime.now(UTC)
 
-    # Try to use the 'email' field to identify the user.  If it's not present, use 'username'.
-    with DefaultStorage().open(task_input['file_name']) as f:
-        # NOTE: There's a bug with the s3 implementation of django file
-        # storage in which passing mode='rU' does not actually open the
-        # file in universal newline mode.  Since the CSV library does not
-        # understand CR/CRLF, we are forced to read the whole file into
-        # memory via file.read().splitlines().
-        users_to_cohorts = [
-            {
-                'username_or_email': row.get('email') or row.get('username'),
-                'cohort': row.get('cohort') or ''
-            }
-            for row in unicodecsv.DictReader(f.read().splitlines(), encoding='utf-8')
-        ]
+    def generate_users_to_cohorts():
+        """
+        Generator to stream user/cohort assignment dicts.
+        """
+        with DefaultStorage().open(task_input['file_name']) as f:
+            # NOTE: There's a bug with the s3 implementation of django 1.4
+            # file storage in which passing mode='rU' does not actually
+            # open the file in universal newline mode.  To accommodate this bug,
+            # we use the BlobIterator to iterate over lines in the file in
+            # fixed-size chunks.
+            for row in unicodecsv.DictReader(BlobIterator(f), encoding='utf-8'):
+                # Try to use the 'email' field to identify the user.  If it's not present, use 'username'.
+                yield {
+                    'username_or_email': row.get('email') or row.get('username'),
+                    'cohort': row.get('cohort') or ''
+                }
 
-    task_progress = TaskProgress(action_name, len(users_to_cohorts), start_time)
+    # TODO: figure out how to get total users
+    task_progress = TaskProgress(action_name, 0, start_time)
     current_step = {'step': 'Cohorting Students'}
     task_progress.update_task_state(extra_meta=current_step)
 
-    cohorts_status = add_users_to_cohorts(course_id, users_to_cohorts)
+    cohorts_status = add_users_to_cohorts(course_id, generate_users_to_cohorts())
 
     # Report task progress based on how users were cohorted.
     for cohort_name, status_dict in cohorts_status.iteritems():

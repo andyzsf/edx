@@ -280,3 +280,49 @@ class TestCohortStudents(TestReportMixin, InstructorTaskCourseTestCase):
                 dict(zip(self.csv_header_row, ['', 'False', '0', '0', '0', ''])),
             ]
         )
+
+    @patch('instructor_task.tasks_helper.DefaultStorage')
+    def test_carriage_return(self, mock_default_storage):
+        """
+        Test that we can handle carriage returns in our file.
+        """
+        # Mock out DefaultStorage's scoped `open` method with standard python
+        # `open` so that we can read from /tmp/
+        mock_default_storage.return_value = Mock()
+        mock_default_storage.return_value.open = open
+
+        result = self._cohort_students_and_upload(
+            u'username,email,cohort\r'
+            u'student_1\xec,,Cohort 1\r'
+            u'student_2,,Cohort 2'
+        )
+        self.assertDictContainsSubset({'attempted': 2, 'succeeded': 2, 'failed': 0}, result)
+        self.verify_rows_in_csv(
+            [
+                dict(zip(self.csv_header_row, ['Cohort 1', 'True', '1', '0', '0', ''])),
+                dict(zip(self.csv_header_row, ['Cohort 2', 'True', '1', '0', '0', ''])),
+            ]
+        )
+
+    @patch('instructor_task.tasks_helper.DefaultStorage')
+    def test_carriage_return_line_feed(self, mock_default_storage):
+        """
+        Test that we can handle carriage returns and line feeds in our file.
+        """
+        # Mock out DefaultStorage's scoped `open` method with standard python
+        # `open` so that we can read from /tmp/
+        mock_default_storage.return_value = Mock()
+        mock_default_storage.return_value.open = open
+
+        result = self._cohort_students_and_upload(
+            u'username,email,cohort\r\n'
+            u'student_1\xec,,Cohort 1\r\n'
+            u'student_2,,Cohort 2'
+        )
+        self.assertDictContainsSubset({'attempted': 2, 'succeeded': 2, 'failed': 0}, result)
+        self.verify_rows_in_csv(
+            [
+                dict(zip(self.csv_header_row, ['Cohort 1', 'True', '1', '0', '0', ''])),
+                dict(zip(self.csv_header_row, ['Cohort 2', 'True', '1', '0', '0', ''])),
+            ]
+        )
