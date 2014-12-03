@@ -18,6 +18,10 @@ define([
             this.wrapper = document.getElementById('edx-notes-wrapper-123');
         });
 
+        afterEach(function () {
+            VisibilityDecorator._setVisibility(null);
+        });
+
         it('can initialize Notes if it visibility equals True', function() {
             var note = VisibilityDecorator.factory(this.wrapper, params, true);
             expect(note).toEqual(jasmine.any(Annotator));
@@ -25,12 +29,12 @@ define([
 
         it('does not initialize Notes if it visibility equals False', function() {
             var note = VisibilityDecorator.factory(this.wrapper, params, false);
-            expect(note).not.toBeDefined();
+            expect(note).toBeNull();
         });
 
         it('can disable all notes', function() {
-            VisibilityDecorator.factory(this.wrapper, params, true),
-            VisibilityDecorator.factory(document.getElementById('edx-notes-wrapper-456'), params, true)
+            VisibilityDecorator.factory(this.wrapper, params, true);
+            VisibilityDecorator.factory(document.getElementById('edx-notes-wrapper-456'), params, true);
 
             VisibilityDecorator.disableNotes();
             expect(Annotator._instances).toHaveLength(0);
@@ -38,8 +42,8 @@ define([
 
         it('can enable the note', function() {
             var secondWrapper = document.getElementById('edx-notes-wrapper-456');
-            VisibilityDecorator.factory(this.wrapper, params, false),
-            VisibilityDecorator.factory(secondWrapper, params, false)
+            VisibilityDecorator.factory(this.wrapper, params, false);
+            VisibilityDecorator.factory(secondWrapper, params, false);
 
             VisibilityDecorator.enableNote(this.wrapper);
             expect(Annotator._instances).toHaveLength(1);
