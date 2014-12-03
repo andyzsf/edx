@@ -151,7 +151,7 @@ class VideoFields(object):
         scope=Scope.settings,
     )
     edx_video_id = String(
-        help=_("EdX Parnters: If edX manages your video encoding, enter the ID assigned by edX to the video that you want this component to show. You enter this ID instead of values for the Default Video URL, the Video File URLs, and all of the YouTube ID fields. If edX does not manage encoding for your videos, continue to enter values in those other fields. Open edX users should ignore this field."),
+        help=_("EdX Partners: If edX manages your video encoding, enter the ID assigned by edX to the video that you want this component to show. You enter this ID instead of values for the Default Video URL, the Video File URLs, and all of the YouTube ID fields. If edX does not manage encoding for your videos, continue to enter values in those other fields. Open edX users should ignore this field."),
         display_name=_("EdX Video ID"),
         scope=Scope.settings,
         default="",
