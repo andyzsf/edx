@@ -6,7 +6,7 @@ define(['jquery', 'js/edxnotes/views/notes', 'jasmine-jquery'],
             var wrapper;
 
             beforeEach(function() {
-                loadFixtures('js/fixtures/edxnotes/edxnotes.html');
+                loadFixtures('js/fixtures/edxnotes/edxnotes-wrapper.html');
                 wrapper = $('div#edx-notes-wrapper-123');
             });
 

@@ -11,7 +11,7 @@ define(['jquery', 'underscore', 'js/edxnotes/views/notes'], function($, _, Notes
         };
 
         createNote = function (element) {
-            Notes.factory(element, parameters[element.id]);
+            return Notes.factory(element, parameters[element.id]);
         };
 
         cleanup = function (ids) {
@@ -26,15 +26,12 @@ define(['jquery', 'underscore', 'js/edxnotes/views/notes'], function($, _, Notes
             });
         };
 
-        factory = function (element, params, is_visible) {
+        factory = function (element, params, isVisible) {
             // When switching sequentials, we need to keep track of the
             // parameters of each element and the visibility (that may have been
             // changed by the checkbox).
             parameters[element.id] = params;
-
-            if (_.isNull(visibility)) {
-                visibility = is_visible;
-            }
+            visibility = isVisible;
             if (visibility) {
                 // When switching sequentials, the global object Annotator still
                 // keeps track of the previous instances that were created in an
@@ -42,7 +39,7 @@ define(['jquery', 'underscore', 'js/edxnotes/views/notes'], function($, _, Notes
                 // but keep those found on page being loaded (for the case when
                 // there are more than one HTMLcomponent per vertical).
                 cleanup(getIds());
-                createNote(element);
+                return createNote(element);
             }
         };
 

@@ -1,10 +1,10 @@
 ;(function (define, undefined) {
-    'use strict';
+'use strict';
 define([
-    'jquery', 'underscore', 'js/edxnotes/views/edxnotes_visibility_decorator'
+    'jquery', 'underscore', 'js/edxnotes/views/visibility_decorator'
 ], function($, _, EdxnotesVisibilityDecorator) {
     return function (visibility, visibilityUrl) {
-        var checkbox = $('p.action-inline > a.action-toggle-notes'),
+        var checkbox = $('p.edx-notes-visibility > a.action-toggle-notes'),
             checkboxIcon = checkbox.children('i.checkbox-icon'),
             toggleNotes, sendRequest;
 
@@ -33,10 +33,10 @@ define([
         };
 
         checkbox.on('click', function (event) {
+            event.preventDefault();
             visibility = !visibility;
             toggleNotes();
             sendRequest();
-            event.preventDefault();
         });
     };
 });

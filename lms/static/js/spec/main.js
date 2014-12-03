@@ -399,12 +399,11 @@
         'lms/include/js/spec/student_account/emailoptin_spec.js',
         'lms/include/js/spec/student_account/shoppingcart_spec.js',
         'lms/include/js/spec/student_profile/profile_spec.js',
-        'lms/include/js/spec/edxnotes/notes_spec.js',
         'lms/include/js/spec/edxnotes/utils/logger_spec.js',
-        'lms/include/js/spec/edxnotes/views/notes_page_spec.js'
-        'lms/include/js/spec/edxnotes/logger_spec.js',
-        'lms/include/js/spec/edxnotes/notes_spec.js',
-        'lms/include/js/spec/edxnotes/shim_spec.js'
+        'lms/include/js/spec/edxnotes/views/notes_page_spec.js',
+        'lms/include/js/spec/edxnotes/views/visibility_decorator_spec.js',
+        'lms/include/js/spec/edxnotes/views/notes_spec.js',
+        'lms/include/js/spec/edxnotes/views/shim_spec.js'
     ]);
 
 }).call(this, requirejs, define);

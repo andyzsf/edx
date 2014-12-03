@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'js/edxnotes/notes', 'jasmine-jquery'],
+define(['jquery', 'underscore', 'js/edxnotes/views/notes', 'jasmine-jquery'],
     function($, _, Notes) {
         'use strict';
 
@@ -21,12 +21,12 @@ define(['jquery', 'underscore', 'js/edxnotes/notes', 'jasmine-jquery'],
                 var events = $._data(document, 'events').click;
 
                 _.each(events, function(event) {
-                    expect(event.namespace.indexOf(namespace)).toBeGreaterThan(-1);
+                    expect(event.namespace.indexOf(namespace)).toBe(-1);
                 });
             }
 
             beforeEach(function() {
-                loadFixtures('js/fixtures/edxnotes/edxnotes.html');
+                loadFixtures('js/fixtures/edxnotes/edxnotes-wrapper.html');
                 highlights = [];
                 annotators = [
                     Notes.factory($('div#edx-notes-wrapper-123').get(0), {}),
