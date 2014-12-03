@@ -4,7 +4,7 @@
 <%page args="course"/>
 
 <%
-    edxnotes_visibility = json.dumps(course.edxnotes_visibility)
+    edxnotes_visibility = course.edxnotes_visibility
     edxnotes_visibility_url = reverse("edxnotes_visibility", kwargs={"course_id": course.id})
 %>
 <p class="action-inline">
@@ -20,7 +20,7 @@
 <script type="text/javascript">
     (function (require) {
         require(['js/edxnotes/views/toggle_notes_factory'], function(ToggleNotesFactory) {
-            ToggleNotesFactory(${edxnotes_visibility}, '${edxnotes_visibility_url}');
+            ToggleNotesFactory(${json.dumps(edxnotes_visibility)}, '${edxnotes_visibility_url}');
         });
     }).call(this, require || RequireJS.require);
 </script>
