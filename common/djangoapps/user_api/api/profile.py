@@ -6,13 +6,16 @@ email address.
 
 """
 import datetime
+import logging
+
 from django.conf import settings
 from django.db import IntegrityError
-import logging
 from pytz import UTC
+import analytics
 
 from user_api.models import User, UserProfile, UserPreference, UserOrgTag
 from user_api.helpers import intercept_errors
+from eventtracking import tracker
 
 log = logging.getLogger(__name__)
 
@@ -201,5 +204,27 @@ def update_email_opt_in(username, org, optin):
         )
         preference.value = str(optin and of_age)
         preference.save()
+
+        if settings.FEATURES.get('SEGMENT_IO_LMS') and settings.SEGMENT_IO_LMS_KEY:
+            if optin:
+                event_name = 'edx.bi.user.org_email.opted_in'
+            else:
+                event_name = 'edx.bi.user.org_email.opted_out'
+
+            tracking_context = tracker.get_tracker().resolve_context()
+
+            analytics.track(
+                user.id,
+                event_name,
+                {
+                    'category': 'communication',
+                    'label': org
+                },
+                context={
+                    'Google Analytics': {
+                        'clientId': tracking_context.get('client_id')
+                    }
+                }
+            )
     except IntegrityError as err:
         log.warn(u"Could not update organization wide preference due to IntegrityError: {}".format(err.message))
