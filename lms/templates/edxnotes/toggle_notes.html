@@ -8,7 +8,7 @@
     edxnotes_visibility_url = reverse("edxnotes_visibility", kwargs={"course_id": course.id})
 %>
 <p class="action-inline edx-notes-visibility">
-    <a href="" class="action-toggle-notes" role="button" aria-pressed="">
+    <a href="#" class="action-toggle-notes is-disabled" role="button" aria-pressed="">
         % if edxnotes_visibility:
             <i class="checkbox-icon icon-check"></i>
         % else:

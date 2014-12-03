@@ -8,11 +8,11 @@ define([
             checkboxIcon = checkbox.children('i.checkbox-icon'),
             toggleNotes, sendRequest;
 
+        checkbox.removeClass('is-disabled');
+
         toggleNotes = function () {
             if (visibility) {
-                $('.edx-notes-wrapper').each(function () {
-                    EdxnotesVisibilityDecorator.enableNote(this)
-                });
+                _.each($('.edx-notes-wrapper'), EdxnotesVisibilityDecorator.enableNote);
                 checkboxIcon.removeClass('icon-check-empty').addClass('icon-check');
             } else {
                 EdxnotesVisibilityDecorator.disableNotes();
@@ -27,7 +27,7 @@ define([
                 dataType: 'json',
                 data: JSON.stringify({'visibility': visibility}),
                 error: function(response) {
-                    console.log(JSON.parse(response.responseText));
+                    console.log($.parseJSON(response.responseText));
                 }
             });
         };
